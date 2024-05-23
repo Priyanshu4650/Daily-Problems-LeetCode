@@ -39,14 +39,14 @@ public:
             in[i] += in[i+1];
         }
 
-        for(int i=0;i<in.size();i++) {
-            cout << in[i] << " ";
-        }
-        cout << endl;
+        // for(int i=0;i<in.size();i++) {
+        //     cout << in[i] << " ";
+        // }
+        // cout << endl;
 
-        for(auto it : mp) {
-            cout << it.first << " " << it.second << endl;
-        }
+        // for(auto it : mp) {
+        //     cout << it.first << " " << it.second << endl;
+        // }
         
         helper(root, mp);
         
