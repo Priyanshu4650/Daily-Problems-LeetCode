@@ -1,56 +1,31 @@
 class Solution {
-    void dfs(vector<vector<int>>& grid, vector<vector<bool>>& visited, int i, int j) {
-        stack<pair<int, int>> st;
-        st.push({i, j});
-        int m = grid.size();
-        int n = grid[0].size();
+    vector<vector<int>> dir = {{0, 1}, {1, 0}, {-1, 0}, {0, -1}};
+    int dfs(vector<vector<int>> &grid, vector<vector<bool>>& visited, int r, int c) {
+        visited[r][c] = true;
 
-        while (!st.empty()) {
-            pair<int, int> t = st.top();
-            st.pop();
-            int r = t.first;
-            int c = t.second;
+        int count = 0;
+        for(int i=0;i<4;i++) {
+            int newX = dir[i][0] + r;
+            int newY = dir[i][1] + c;
 
-            // Mark the cell as visited
-            visited[r][c] = true;
-
-            // Check neighbors and push unvisited neighboring cells onto the stack
-            if (r + 1 < m && grid[r + 1][c] == 1 && !visited[r + 1][c]) {
-                st.push({r + 1, c});
-            }
-            if (c + 1 < n && grid[r][c + 1] == 1 && !visited[r][c + 1]) {
-                st.push({r, c + 1});
-            }
-            if (r - 1 >= 0 && grid[r - 1][c] == 1 && !visited[r - 1][c]) {
-                st.push({r - 1, c});
-            }
-            if (c - 1 >= 0 && grid[r][c - 1] == 1 && !visited[r][c - 1]) {
-                st.push({r, c - 1});
+            if(newX >= 0 && newX < grid.size() && newY >= 0 && newY < grid[0].size() && grid[newX][newY] == 1 && visited[newX][newY] == false) {
+                count += dfs(grid, visited, newX, newY);
             }
         }
+
+        return 1 + count;
     }
 public:
     int maxAreaOfIsland(vector<vector<int>>& grid) {
-        int m = grid.size();
-        int n = grid[0].size();
-        vector<vector<bool>> visited(m, vector<bool>(n, false));
+        int n = grid.size();
+        int m = grid[0].size();
+        vector<vector<bool>> visited(n, vector<bool>(m, false));
 
         int maxArea = 0;
-        for (int i = 0; i < m; i++) {
-            for (int j = 0; j < n; j++) {
-                if (grid[i][j] == 1 && !visited[i][j]) {
-                    int area = 0;
-                    dfs(grid, visited, i, j);
-                    // Calculate the area of the island starting from this cell
-                    for (int p = 0; p < m; p++) {
-                        for (int q = 0; q < n; q++) {
-                            if (visited[p][q]) {
-                                area++;
-                                visited[p][q] = false; // Reset visited state for the next iteration
-                            }
-                        }
-                    }
-                    maxArea = max(maxArea, area);
+        for(int i=0;i<n;i++) {
+            for(int j=0;j<m;j++) {
+                if(grid[i][j] == 1 && visited[i][j] == false) {
+                    maxArea = max(maxArea, dfs(grid, visited, i, j));
                 }
             }
         }
