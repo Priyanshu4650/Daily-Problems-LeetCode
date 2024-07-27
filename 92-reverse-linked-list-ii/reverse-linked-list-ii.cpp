@@ -9,44 +9,29 @@
  * };
  */
 class Solution {
-    ListNode* reverse(ListNode* temp1) {
-        if(temp1==NULL || temp1->next==NULL) return temp1;
-        ListNode* temp = temp1->next;
-        temp1->next=NULL;
-        ListNode* ans = reverse(temp);
-        temp->next = temp1;
-        return ans  ;
-    }   
 public:
     ListNode* reverseBetween(ListNode* head, int left, int right) {
-        if(left==right) return head;
-        ListNode* temp1=head;
-        ListNode* prev = NULL;
-        ListNode* temp2 = head;
-        ListNode* after = NULL;
-        for(int i=1;i<left;i++)
-        {
-            if(temp1!=NULL){
-                prev=temp1;
-                temp1=temp1->next;
-            }
+        if (!head || left == right) {
+            return head;
         }
-        for(int i=1;i<right;i++)
-        {
-            if(temp2!=NULL)
-            {
-                temp2=temp2->next;
-                after = temp2->next;
-            }
+
+        ListNode* dummy = new ListNode(0);
+        dummy->next = head;
+        ListNode* prev = dummy;
+
+        for (int i = 0; i < left - 1; i++) {
+            prev = prev->next;
         }
-        if(prev!=NULL) prev->next=NULL;
-        temp2->next=NULL;
-        ListNode* ans = reverse(temp1);
-        if(prev!=NULL) prev->next=ans;
-        ListNode* tempo = ans;
-        while(tempo->next!=NULL) tempo=tempo->next;
-        tempo->next=after;
-        if(prev==NULL) return ans; // THIS REFERS THAT THE REVERSE LIST INCLUDES HEAD POINTER. THEREFORE WE NEED TO RETURN 
-        return head; 
+
+        ListNode* cur = prev->next;
+
+        for (int i = 0; i < right - left; i++) {
+            ListNode* temp = cur->next;
+            cur->next = temp->next;
+            temp->next = prev->next;
+            prev->next = temp;
+        }
+
+        return dummy->next;        
     }
 };
