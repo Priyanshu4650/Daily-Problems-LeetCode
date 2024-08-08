@@ -24,7 +24,7 @@ public:
                 }
             }
             else {
-                st.push(atoi(token.c_str()));
+                st.push(stoi(token));
             }
 
             cout << st.top() << " " << st.size() << endl;
