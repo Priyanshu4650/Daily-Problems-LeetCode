@@ -1,45 +1,38 @@
 class Solution {
-    int dijkstra(int n, vector<vector<int>>& adj) {
-        int src = 0;
-        int dest = n - 1;
-
-        priority_queue<int> pq;
-        vector<int> distance(n, INT_MAX);
-        distance[src] = 0;
-        pq.push(src);
-        
-        while(!pq.empty()) {
-            int curr = pq.top();
-            pq.pop();
-
-            for(int i=0;i<adj[curr].size();i++) {
-                
-                if(distance[curr] + 1 < distance[adj[curr][i]]) {
-                    pq.push(adj[curr][i]);
-                    distance[adj[curr][i]] = distance[curr] + 1;
-                }
-            }
+    void updateDistances(vector<vector<int>>& graph, int current, vector<int>& distances) {
+        int newDist = distances[current] + 1;
+        for (int neighbor : graph[current]) {
+            if (distances[neighbor] <= newDist) continue;
+            distances[neighbor] = newDist;
+            updateDistances(graph, neighbor, distances);
         }
-
-        return distance[dest];
     }
 public:
     vector<int> shortestDistanceAfterQueries(int n, vector<vector<int>>& queries) {
-        vector<int> result;
-        vector<vector<int>> adj(n);
-
-        for(int i=0;i<n - 1;i++) {
-            adj[i].push_back(i + 1);
-        } 
-
-        for(auto &query : queries) {
-            int u = query[0];
-            int v = query[1];
-
-            adj[u].push_back(v);
-            result.push_back(dijkstra(n, adj));
+        vector<int> distances(n);
+        for (int i = 0; i < n; ++i) {
+            distances[i] = n - 1 - i;
         }
-
-        return result;
+        
+        vector<vector<int>> graph(n);
+        for (int i = 0; i + 1 < n; ++i) {
+            graph[i + 1].push_back(i);
+        }
+        
+        vector<int> answer(queries.size());
+        int queryIdx = 0;
+        
+        for (const auto& query : queries) {
+            int source = query[0];
+            int target = query[1];
+            
+            graph[target].push_back(source);
+            distances[source] = min(distances[source], distances[target] + 1);
+            updateDistances(graph, source, distances);
+            
+            answer[queryIdx++] = distances[0];
+        }
+        
+        return answer;
     }
 };
