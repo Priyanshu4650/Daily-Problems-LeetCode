@@ -1,34 +1,55 @@
 class Solution {
 public:
-    vector<bool> isArraySpecial(vector<int>& nums, vector<vector<int>>& queries) {
-        
-        vector<int> bad;
-        vector<bool> ans;
-        int n = nums.size();
+    vector<bool> isArraySpecial(vector<int>& nums,
+                                vector<vector<int>>& queries) {
+        vector<bool> ans(queries.size());
+        vector<int> violatingIndices;
 
-        bad.push_back(0);
-        for(int i=1 ; i<n ; i++){
-            if(nums[i]%2==nums[i-1]%2){
-                bad.push_back(1);
-            }else{
-                bad.push_back(0);
+        for (int i = 1; i < nums.size(); i++) {
+            // same parity, found violating index
+            if (nums[i] % 2 == nums[i - 1] % 2) {
+                violatingIndices.push_back(i);
             }
         }
 
-        vector<int> pSum(n);
-        pSum[0] = 0;
-        for(int i=1 ; i<n ; i++){
-            pSum[i] = pSum[i-1]+bad[i];
+        for (int i = 0; i < queries.size(); i++) {
+            vector<int> query = queries[i];
+            int start = query[0];
+            int end = query[1];
+
+            bool foundViolatingIndex =
+                binarySearch(start + 1, end, violatingIndices);
+
+            if (foundViolatingIndex) {
+                ans[i] = false;
+            } else {
+                ans[i] = true;
+            }
         }
 
-        for(int i=0 ; i<queries.size() ; i++){
-
-            int l = queries[i][0];
-            int r = queries[i][1];
-
-            if(pSum[r]-pSum[l] >= 1) ans.push_back(false);
-            else ans.push_back(true);
-        }
         return ans;
+    }
+
+private:
+    bool binarySearch(int start, int end, vector<int>& violatingIndices) {
+        int left = 0;
+        int right = violatingIndices.size() - 1;
+        while (left <= right) {
+            int mid = left + (right - left) / 2;
+            int violatingIndex = violatingIndices[mid];
+
+            if (violatingIndex < start) {
+                // check right half
+                left = mid + 1;
+            } else if (violatingIndex > end) {
+                // check left half
+                right = mid - 1;
+            } else {
+                // violatingIndex falls in between start and end
+                return true;
+            }
+        }
+
+        return false;
     }
 };
